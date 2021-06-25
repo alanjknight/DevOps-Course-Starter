@@ -43,18 +43,11 @@ def delete_task(id):
     delete_item(id)
     return redirect(url_for('index'))
 
-@app.route('/sort/<string:column>/<int:reverse>')
+@app.route('/sort/<string:column>/')
 def sort_tasks(column):
-    
-    if not reverse:
-        reverse = 0
-    elif reverse == 1:
-        reverse = 0
-    else:
-        reverse = 1
 
     items = get_items()
-    items = sorted(items,key=itemgetter(column), reverse=reverse)
+    items = sorted(items,key=itemgetter(column))
     
     return render_template('index.html', items=items)
 
