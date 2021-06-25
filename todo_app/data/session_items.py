@@ -1,7 +1,7 @@
 from flask import session
 
 _DEFAULT_ITEMS = [
-    { 'id': 1, 'status': 'Not Started', 'title': 'List saved todo items' },
+    { 'id': 1, 'status': 'Started', 'title': 'List saved todo items' },
     { 'id': 2, 'status': 'Not Started', 'title': 'Allow new items to be added' }
 ]
 
@@ -40,6 +40,7 @@ def add_item(title):
     Returns:
         item: The saved item.
     """
+
     items = get_items()
 
     # Determine the ID for the item based on that of the previously added item
@@ -67,3 +68,10 @@ def save_item(item):
     session['items'] = updated_items
 
     return item
+
+def delete_item(id):
+    items = get_items()
+    item = get_item(id)
+    items.remove(item)
+    session['items'] = items
+
