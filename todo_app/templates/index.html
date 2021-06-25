@@ -5,11 +5,22 @@
   <div class="jumbotron">
     <h1 class="display-4">To-Do App</h1>
     <p class="lead">Just another to-do app.</p>
+    <hr class="my-4">
   </div>
 
-  <form method="POST" action="/" enctype="multipart/form-data">
-    <input type="text" name="title", placeholder="Title">
-    <input type="submit" value="Add Item">
+  <form class="needs-validation" novalidate method="POST" action="/" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input type="text" class="form-control" id="title", name="title" aria-describedby="titleHelp" placeholder="Title">
+      <div>
+        {% if not title_feedback %}
+          <small id="titleHelp" class="form-text text-muted">Enter Task Description</small>
+        {% else %}
+          <small id="titleHelp" class="errorText">{{ title_feedback }}</small>
+        {% endif %}
+      </div>  
+      <input type="submit" value="Add Item">
+    </div>
   </form>
 
   <div class="row">
@@ -18,9 +29,9 @@
       <table class="table">
         <thead>
           <tr>
-            <th scope="Col">#</th>
-            <th scope="Col">Title</th>
-            <th scope="Col">Status</th>
+            <th scope="Col"><a href = {{ url_for('sort_tasks', column="id") }}>ID</a></th>
+            <th scope="Col"><a href = {{ url_for('sort_tasks', column="title") }}>Title</a></th>
+            <th scope="Col"><a href = {{ url_for('sort_tasks', column="status") }}>Status</a></th>
             <th scope="Col">Action</th>
           </tr>
         </thead>
@@ -32,14 +43,15 @@
               <td>{{ item.status }}</td>
               <td>
                   {% if item.status=="Not Started" %}
-                    <a href = {{ url_for('update_task', action="start_task", id=item.id)}}>Start Task</a>
+                    <a href = {{ url_for('update_task', action="start_task", id=item.id)}}>[Start Task]</a>
                   {% endif %}
                   {% if item.status=="Started" %}
-                    <a href = {{ url_for('update_task', action="finish_task", id=item.id)}}>Finish Task</a>
+                    <a href = {{ url_for('update_task', action="finish_task", id=item.id)}}>[Finish Task]</a>
                   {% endif %}
                   {% if item.status=="Finished" %}
-                    <a href = {{ url_for('update_task', action="reset_task", id=item.id)}}>Reset Task</a>
+                    <a href = {{ url_for('update_task', action="reset_task", id=item.id)}}>[Reset Task]</a>
                   {% endif %}
+                  <a href = {{ url_for('delete_task', id=item.id)}}>[Delete Task]</a>
               </td>
             </tr>
           {% endfor %}

@@ -1,7 +1,7 @@
-from todo_app.data.session_items import add_item, get_items, get_item, save_item
-from flask import Flask
-from flask import render_template
-from flask import request
+from todo_app.data.session_items import add_item, get_items, get_item, save_item, delete_item
+from flask import Flask, render_template, request, redirect, url_for
+
+from operator import itemgetter
 
 from todo_app.flask_config import Config
 
@@ -17,23 +17,46 @@ def _update_task(task, action):
         task["status"]="Not Started"    
     save_item(task)
 
-
-
-@app.route('/')
+    
+@app.route('/', methods = ['GET'])
 def index():
     return render_template('index.html', items=get_items())
 
 @app.route('/', methods = ['POST'])
 def submit():
-    add_item(request.form['title'])
-    return render_template('index.html', items=get_items())
-
+    title_feedback = ""
+    if not request.form['title']:
+        title_feedback = "Cannot add a ToDo item without a title"
+    else:
+        add_item(request.form['title'])
+    return render_template('index.html', items=get_items(), title_feedback=title_feedback)
 
 @app.route('/update/<string:action>/<int:id>')
 def update_task(action, id):
     task = get_item(id)
     _update_task(task, action)
+    
     return render_template('index.html', items=get_items())
+
+@app.route('/delete/<int:id>')
+def delete_task(id):
+    delete_item(id)
+    return redirect(url_for('index'))
+
+@app.route('/sort/<string:column>/<int:reverse>')
+def sort_tasks(column):
+    
+    if not reverse:
+        reverse = 0
+    elif reverse == 1:
+        reverse = 0
+    else:
+        reverse = 1
+
+    items = get_items()
+    items = sorted(items,key=itemgetter(column), reverse=reverse)
+    
+    return render_template('index.html', items=items)
 
 if __name__ == '__main__':
     app.run()
