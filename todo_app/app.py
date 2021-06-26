@@ -1,6 +1,7 @@
 from todo_app.data.session_items import add_item, get_items, get_item, save_item, delete_item
 from flask import Flask, render_template, request, redirect, url_for
 
+
 from operator import itemgetter
 
 from todo_app.flask_config import Config
@@ -19,8 +20,9 @@ def _update_task(task, action):
 
     
 @app.route('/', methods = ['GET'])
-def index():
-    return render_template('index.html', items=get_items())
+def index(last_sorted_col="id", sorted_reversed=0):
+
+    return render_template('index.html', items=get_items(), last_sorted_col=last_sorted_col, sorted_reversed=sorted_reversed)
 
 @app.route('/', methods = ['POST'])
 def submit():
@@ -43,13 +45,27 @@ def delete_task(id):
     delete_item(id)
     return redirect(url_for('index'))
 
-@app.route('/sort/<string:column>/')
+@app.route('/sort/<string:column>')
 def sort_tasks(column):
 
     items = get_items()
-    items = sorted(items,key=itemgetter(column))
+    sorted_reversed = request.args.get("sorted_reversed")
     
-    return render_template('index.html', items=items)
+    if sorted_reversed == "True":
+        sorted_reversed = True
+    else:
+        sorted_reversed = False    
+
+    last_sorted_col=request.args.get("last_sorted_col")
+
+    if last_sorted_col == column:
+        sorted_reversed = not sorted_reversed
+    else:
+        sorted_reversed = False    
+        
+    items = sorted(items,key=itemgetter(column), reverse=sorted_reversed)
+    
+    return render_template('index.html', items=items, last_sorted_col=column, sorted_reversed=sorted_reversed)
 
 if __name__ == '__main__':
     app.run()

@@ -29,11 +29,28 @@
       <table class="table">
         <thead>
           <tr>
-            <th scope="Col"><a href = {{ url_for('sort_tasks', column="id") }}>ID</a></th>
-            <th scope="Col"><a href = {{ url_for('sort_tasks', column="title") }}>Title</a></th>
-            <th scope="Col"><a href = {{ url_for('sort_tasks', column="status") }}>Status</a></th>
-            <th scope="Col">Action</th>
+            <input type="hidden" id="last_sorted_col" value={{ last_sorted_col }} >
+            <input type="hidden" id="sorted_reversed" value={{ sorted_reversed }} >
+            <th scope="Col"><a href = {{ url_for('sort_tasks', column="id",    last_sorted_col=last_sorted_col, sorted_reversed=sorted_reversed) }}>ID 
+              {% if last_sorted_col == "id" and sorted_reversed == False %} &#8595;
+              {% elif last_sorted_col == "id" and sorted_reversed == True %} &#8593;  
+              {% endif %} 
+            </a></th>
+            
+            <th scope="Col"><a href = {{ url_for('sort_tasks', column="title", last_sorted_col=last_sorted_col, sorted_reversed=sorted_reversed) }}>Title
+              {% if last_sorted_col == "title" and sorted_reversed == False %} &#8595;  
+              {% elif last_sorted_col == "title" and sorted_reversed == True %} &#8593;  
+              {% endif %} 
+            </a></th>
+            
+            
+            <th scope="Col"><a href = {{ url_for('sort_tasks', column="status", last_sorted_col=last_sorted_col, sorted_reversed=sorted_reversed) }}>Status
+            {% if last_sorted_col == "status" and sorted_reversed == False %} &#8595;  {% endif %}
+            {% if last_sorted_col == "status" and sorted_reversed == True %}&#8593;  {% endif %} 
+          </a></th>
           </tr>
+          
+          
         </thead>
         <tbody>
           {% for item in items %}
