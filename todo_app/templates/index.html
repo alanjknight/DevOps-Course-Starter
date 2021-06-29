@@ -11,12 +11,22 @@
   <form class="needs-validation" novalidate method="POST" action="/" enctype="multipart/form-data">
     <div class="form-group">
       <label for="title">Title</label>
-      <input type="text" class="form-control" id="title", name="title" aria-describedby="titleHelp" placeholder="Title">
+      <input type="text" class="form-control" id="title", name="title" aria-describedby="title_help" placeholder="Title" value='{{ entered_title }}'>
       <div>
         {% if not title_feedback %}
-          <small id="titleHelp" class="form-text text-muted">Enter Task Description</small>
+          <small id="title_help" class="form-text text-muted">Enter Task Description</small>
         {% else %}
-          <small id="titleHelp" class="errorText">{{ title_feedback }}</small>
+          <small id="title_help" class="errorText">{{ title_feedback }}</small>
+        {% endif %}
+      </div>  
+
+      <label for="target_date">Target Completion Date</label>
+      <input type="text" class="form-control" id="target_date", name="target_date" aria-describedby="target_date_help" placeholder="dd/mm/yy" value={{ entered_target_date }}>
+      <div>
+        {% if not target_date_feedback %}
+          <small id="target_date_help" class="form-text text-muted">Enter Target Completion Date (dd/mm/yy)</small>
+        {% else %}
+          <small id="target_date_help" class="errorText">{{ target_date_feedback }}</small>
         {% endif %}
       </div>  
       <input type="submit" value="Add Item">
@@ -29,26 +39,36 @@
       <table class="table">
         <thead>
           <tr>
-            <input type="hidden" id="last_sorted_col" value={{ last_sorted_col }} >
-            <input type="hidden" id="sorted_reversed" value={{ sorted_reversed }} >
-            <th scope="Col"><a href = {{ url_for('sort_tasks', column="id",    last_sorted_col=last_sorted_col, sorted_reversed=sorted_reversed) }}>ID 
-              {% if last_sorted_col == "id" and sorted_reversed == False %} &#8595;
-              {% elif last_sorted_col == "id" and sorted_reversed == True %} &#8593;  
+            <input type="hidden" id="last_sort_col" value={{ last_sort_col }} >
+            <input type="hidden" id="sort_reverse" value={{ sort_reverse }} >
+            <th scope="Col"><a href = {{ url_for('index', sort_col="id", last_sort_col=last_sort_col, sort_reverse=sort_reverse) }}>ID 
+              {% if last_sort_col == "id" and sort_reverse == False %} &#8595;
+              {% elif last_sort_col == "id" and sort_reverse == True %} &#8593;  
               {% endif %} 
             </a></th>
             
-            <th scope="Col"><a href = {{ url_for('sort_tasks', column="title", last_sorted_col=last_sorted_col, sorted_reversed=sorted_reversed) }}>Title
-              {% if last_sorted_col == "title" and sorted_reversed == False %} &#8595;  
-              {% elif last_sorted_col == "title" and sorted_reversed == True %} &#8593;  
+            <th scope="Col"><a href = {{ url_for('index', sort_col="title", last_sort_col=last_sort_col, sort_reverse=sort_reverse) }}>Title
+              {% if last_sort_col == "title" and sort_reverse == False %} &#8595;  
+              {% elif last_sort_col == "title" and sort_reverse == True %} &#8593;  
               {% endif %} 
             </a></th>
             
             
-            <th scope="Col"><a href = {{ url_for('sort_tasks', column="status", last_sorted_col=last_sorted_col, sorted_reversed=sorted_reversed) }}>Status
-            {% if last_sorted_col == "status" and sorted_reversed == False %} &#8595;  {% endif %}
-            {% if last_sorted_col == "status" and sorted_reversed == True %}&#8593;  {% endif %} 
-          </a></th>
+            <th scope="Col"><a href = {{ url_for('index', sort_col="status", last_sort_col=last_sort_col, sort_reverse=sort_reverse) }}>Status
+            {% if last_sort_col == "status" and sort_reverse == False %} &#8595;  {% endif %}
+            {% if last_sort_col == "status" and sort_reverse == True %}&#8593;  {% endif %} 
+            </a></th>
+
+            <th scope="Col"><a href = {{ url_for('index', sort_col="target_date", last_sort_col=last_sort_col, sort_reverse=sort_reverse) }}>Target Date
+            {% if last_sort_col == "target_date" and sort_reverse == False %} &#8595;  {% endif %}
+            {% if last_sort_col == "target_date" and sort_reverse == True %}&#8593;  {% endif %} 
+            </a></th>
+
+          <th scope="Col">Action</th>
+
           </tr>
+
+
           
           
         </thead>
@@ -58,17 +78,18 @@
               <td>{{ item.id }}</td>
               <td>{{ item.title }}</td>   
               <td>{{ item.status }}</td>
+              <td>{{ item.target_date }}</td>
               <td>
                   {% if item.status=="Not Started" %}
-                    <a href = {{ url_for('update_task', action="start_task", id=item.id)}}>[Start Task]</a>
+                    <a href = {{ url_for('update_task', action="start_task", id=item.id, last_sorted_col=last_sort_col, sorted_reversed=sort_reversed)}}>[Start Task]</a>
                   {% endif %}
                   {% if item.status=="Started" %}
-                    <a href = {{ url_for('update_task', action="finish_task", id=item.id)}}>[Finish Task]</a>
+                    <a href = {{ url_for('update_task', action="finish_task", id=item.id, last_sorted_col=last_sort_col, sorted_reversed=sort_reversed)}}>[Finish Task]</a>
                   {% endif %}
                   {% if item.status=="Finished" %}
-                    <a href = {{ url_for('update_task', action="reset_task", id=item.id)}}>[Reset Task]</a>
+                    <a href = {{ url_for('update_task', action="reset_task", id=item.id, last_sorted_col=last_sort_col, sorted_reversed=sort_reversed)}}>[Reset Task]</a>
                   {% endif %}
-                  <a href = {{ url_for('delete_task', id=item.id)}}>[Delete Task]</a>
+                  <a href = {{ url_for('delete_task', id=item.id, last_sorted_col=last_sort_col, sorted_reversed=sort_reversed)}}>[Delete Task]</a>
               </td>
             </tr>
           {% endfor %}

@@ -1,8 +1,9 @@
 from flask import session
+from datetime import datetime
 
 _DEFAULT_ITEMS = [
-    { 'id': 1, 'status': 'Started', 'title': 'List saved todo items' },
-    { 'id': 2, 'status': 'Not Started', 'title': 'Allow new items to be added' }
+    { 'id': 1, 'status': 'Started', 'title': 'List saved todo items' , 'target_date' : datetime.strptime('30/6/21','%d/%m/%y')},
+    { 'id': 2, 'status': 'Not Started', 'title': 'Allow new items to be added', 'target_date': datetime.strptime('1/7/21','%d/%m/%y')}
 ]
 
 
@@ -30,7 +31,7 @@ def get_item(id):
     return next((item for item in items if item['id'] == int(id)), None)
 
 
-def add_item(title):
+def add_item(title, target_date):
     """
     Adds a new item with the specified title to the session.
 
@@ -46,7 +47,7 @@ def add_item(title):
     # Determine the ID for the item based on that of the previously added item
     id = items[-1]['id'] + 1 if items else 0
 
-    item = { 'id': id, 'title': title, 'status': 'Not Started' }
+    item = { 'id': id, 'title': title, 'status': 'Not Started' , 'target_date': target_date}
 
     # Add the item to the list
     items.append(item)
