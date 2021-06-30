@@ -22,29 +22,16 @@ def update_task_status(task, action):
 @app.route('/', methods = ['GET'])
 def index():
     
-    sort_col="id"
-    last_sort_col='id'
-    sort_reverse='True'
-
     # which column are we to sort on (id passed in by default if nothing specified)
-    if request.args.get("sort_col"):
-        sort_col=request.args.get("sort_col")
+    sort_col=request.args.get("sort_col", "id")
 
     # is sorting to be reversed?  And convert the string value to a bool.
-    if request.args.get("sort_reverse"):
-        sort_reverse = request.args.get("sort_reverse")
-
-    if sort_reverse == "True":
-        sort_reverse = True
-    else:
-        sort_reverse = False    
-    print("xx"+str(sort_reverse))
+    sort_reverse = request.args.get("sort_reverse", "True")
+    sort_reverse = (sort_reverse=="True")
 
     #which column had we previosly sorted on (id passed in as default)
     #this is used to make sure that if we sorted on the same column as before, we reverse the sort order, if its different, we revert to ascending.
-    if request.args.get("last_sort_col"):
-        print('last_sort_col Request:'+request.args.get("last_sort_col"))
-        last_sort_col=request.args.get("last_sort_col")
+    last_sort_col=request.args.get("last_sort_col", "id")
 
     if last_sort_col == sort_col:
         sort_reverse = not sort_reverse
