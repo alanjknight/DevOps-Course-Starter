@@ -29,6 +29,8 @@
           <small id="target_date_help" class="errorText">{{ target_date_feedback }}</small>
         {% endif %}
       </div>  
+      <input type="hidden" id="last_sort_col" name="last_sort_col" value={{ last_sort_col }} >
+      <input type="hidden" id="sort_reverse" name="sort_reverse" value={{ sort_reverse }} >
       <input type="submit" value="Add Item">
     </div>
   </form>
