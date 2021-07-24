@@ -18,31 +18,74 @@ def update_task_status(task, action):
         task["status"]="Not Started"    
     save_item(task)
 
-def is_sort_reverse(sort_col, last_sort_col):
-    sort_reverse = request.args.get('sort_reverse', session.get('sort_reverse'))
-    sort_reverse = (sort_reverse=='True')   
-    
-    if last_sort_col == sort_col:
-        sort_reverse = not sort_reverse
-    else:
-        sort_reverse = False 
-
-    return sort_reverse
-
 def get_last_sort_col():
-    return request.args.get('last_sort_col', session.get('last_sort_col', 'id'))
+    #could not get these lines to return the default of when last_sort_col was None in agrs and session.
+    #print("Last Sort Col", request.args.get('last_sort_col', session.get('last_sort_col', 'id')))
+    #return request.args.get('last_sort_col', session.get('last_sort_col', 'id'))
+    lsc = request.args.get('last_sort_col')
+    if not lsc:
+        lsc = session.get('last_sort_col')
+    if not lsc:
+        lsc = 'id'
+    return lsc
     
 def get_sort_col():
-    return request.args.get('sort_col', session.get('sort_col', 'id'))
+    #as in get last sort col, cant get the defaults to work.
+    #print("Sort Col", request.args.get('sort_col', session.get('sort_col', 'id')))
+    #return request.args.get('sort_col', session.get('sort_col', 'id'))
+    sc = request.args.get('sort_col')
+    if not sc:
+        sc = session.get('sort_col')
+    if not sc:
+        sc = "id"
+    return sc
+
+
+def get_sort_dir():
+    sd = request.args.get('sort_dir')
+    if not sd:
+        sd = session.get('sort_dir')
+    if not sd:
+        sd = 'asc'
+    return sd    
+
+def preserve_sort():
+    pso = session.get('preserve_sort')
+    session['preserve_sort']=None
+    return pso==True
+
+def get_sort_parameters():
+    
+    if(not request.args.get('sort_col') and not session.get('sort_col')):
+        sort_col='id'
+        last_sort_col=None
+        sort_reverse=False
+        sort_dir='asc'
+        return sort_col, last_sort_col, sort_reverse, sort_dir    
+    else:
+        sort_col = get_sort_col()
+        last_sort_col = get_last_sort_col()
+        sort_dir = get_sort_dir()
+        if(not preserve_sort()):
+            if (sort_col == last_sort_col):
+                if (sort_dir == 'asc'):
+                    sort_dir='des'
+                else:
+                    sort_dir='asc'    
+        if sort_dir == 'asc':
+            sort_reverse = False
+        else:
+            sort_reverse = True
+
+        last_sort_col=sort_col    
+        return sort_col, last_sort_col, sort_reverse, sort_dir
+    
 
 @app.route('/', methods = ['GET'])
 def index():
     
-    sort_col=get_sort_col()
-    last_sort_col=get_last_sort_col()
-    sort_reverse = is_sort_reverse(sort_col, last_sort_col)
-    print (sort_col, last_sort_col, sort_reverse)
-    last_sort_col=sort_col    
+    sort_col, last_sort_col, sort_reverse, sort_dir = get_sort_parameters()
+    print(sort_col, last_sort_col,sort_reverse, sort_dir)   
     
     items = get_items()
     items = sorted(items,key=itemgetter(sort_col), reverse=sort_reverse)
@@ -58,8 +101,9 @@ def index():
 
 
     return render_template('index.html', items=items, 
+        sort_col=sort_col,
         last_sort_col=last_sort_col, 
-        sort_reverse=sort_reverse,
+        sort_dir=sort_dir,
         entered_title = entered_title,
         entered_target_date = entered_target_date,
         target_date_feedback = target_date_feedback,
@@ -72,6 +116,10 @@ def submit():
 
     target_date = 0
     input_error = False
+
+    session['last_sort_col'] = request.form['last_sort_col'] 
+    session['sort_dir']=request.args.get('sort_dir')
+    session['sort_col']=request.form['last_sort_col']
 
     if not request.form['title']:
         input_error = True
@@ -87,9 +135,6 @@ def submit():
             input_error = True
             target_date_feedback = "This date cannot be converted to a date in the format dd/mm/yy"
 
-    session['last_sort_col'] = request.form['last_sort_col'] 
-    session['sort_reverse'] = request.form['sort_reverse']
-    session['sort_col']=request.form['last_sort_col']
  
     if input_error:
         session['entered_title'] = request.form['title']
@@ -100,17 +145,26 @@ def submit():
 
     add_item(request.form['title'], target_date)
     return redirect(url_for('index'))
-    
+
 @app.route('/update/<string:action>/<int:id>')
 def update_task(action, id):
     task = get_item(id)
     update_task_status(task, action)
+    session['last_sort_col']=get_last_sort_col()
+    session['sort_col']=get_sort_col()
+    session['sort_dir']=request.args.get('sort_dir')
+    session['preserve_sort']=True
     return redirect(url_for('index'))
     
+
 @app.route('/delete/<int:id>')
 def delete_task(id):
     delete_item(id)
+    session['last_sort_col']=get_last_sort_col()
+    session['sort_col']=get_sort_col()
+    session['sort_dir']=request.args.get('sort_dir')
+    session['preserve_sort']=True
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run()
+    app.run(use_debugger=False, use_reloader=False, passthrough_errors=True)

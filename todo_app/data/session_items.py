@@ -2,8 +2,14 @@ from flask import session
 from datetime import datetime
 
 _DEFAULT_ITEMS = [
-    { 'id': 1, 'status': 'Started', 'title': 'List saved todo items' , 'target_date' : datetime.strptime('30/6/21','%d/%m/%y')},
-    { 'id': 2, 'status': 'Not Started', 'title': 'Allow new items to be added', 'target_date': datetime.strptime('1/7/21','%d/%m/%y')}
+    { 'id': 1, 'status': 'Not Started', 'title': 'Task1', 'target_date': datetime.strptime('1/7/14','%d/%m/%y')},
+    { 'id': 2, 'status': 'Not Started', 'title': 'Task2', 'target_date': datetime.strptime('1/7/15','%d/%m/%y')},
+    { 'id': 3, 'status': 'Not Started', 'title': 'Task3', 'target_date': datetime.strptime('1/7/16','%d/%m/%y')},
+    { 'id': 4, 'status': 'Not Started', 'title': 'Task4', 'target_date': datetime.strptime('1/7/17','%d/%m/%y')},
+    { 'id': 5, 'status': 'Not Started', 'title': 'Task5', 'target_date': datetime.strptime('1/7/18','%d/%m/%y')},
+    { 'id': 6, 'status': 'Not Started', 'title': 'Task6', 'target_date': datetime.strptime('1/7/19','%d/%m/%y')},
+    { 'id': 7, 'status': 'Not Started', 'title': 'Task7', 'target_date': datetime.strptime('1/7/20','%d/%m/%y')},
+    { 'id': 8, 'status': 'Not Started', 'title': 'Task8', 'target_date': datetime.strptime('1/7/21','%d/%m/%y')}
 ]
 
 
