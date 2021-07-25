@@ -20,8 +20,7 @@ def update_task_status(task, action):
 
 def get_last_sort_col():
     #could not get these lines to return the default of when last_sort_col was None in agrs and session.
-    #print("Last Sort Col", request.args.get('last_sort_col', session.get('last_sort_col', 'id')))
-    #return request.args.get('last_sort_col', session.get('last_sort_col', 'id'))
+#    return request.args.get('last_sort_col', session.get('last_sort_col', 'id'))
     lsc = request.args.get('last_sort_col')
     if not lsc:
         lsc = session.get('last_sort_col')
@@ -85,7 +84,6 @@ def get_sort_parameters():
 def index():
     
     sort_col, last_sort_col, sort_reverse, sort_dir = get_sort_parameters()
-    print(sort_col, last_sort_col,sort_reverse, sort_dir)   
     
     items = get_items()
     items = sorted(items,key=itemgetter(sort_col), reverse=sort_reverse)
