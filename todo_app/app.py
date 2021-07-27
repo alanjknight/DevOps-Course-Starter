@@ -1,22 +1,21 @@
-from todo_app.data.session_items import add_item, get_items, get_item, save_item, delete_item
+from todo_app.flask_config import Config
 from flask import Flask, render_template, redirect, url_for, request, session
 from datetime import datetime
-
 from operator import itemgetter
-
-from todo_app.flask_config import Config
+from todo_app.data.Trello_Member import Trello_Member
+from todo_app.data.Trello_Loader import get_member, hydrate_member
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
-def update_task_status(task, action):
-    if action=="start_task":
-        task["status"]="Started"
-    if action=="finish_task":
-        task["status"]="Finished"    
-    if action=="reset_task":
-        task["status"]="Not Started"    
-    save_item(task)
+#def update_task_status(task, action):
+#    if action=="start_task":
+#        task["status"]="Started"
+#    if action=="finish_task":
+#        task["status"]="Finished"    
+#    if action=="reset_task":
+#        task["status"]="Not Started"    
+#    save_item(task)
 
 def get_last_sort_col():
     #could not get these lines to return the default of when last_sort_col was None in agrs and session.
@@ -83,30 +82,42 @@ def get_sort_parameters():
 @app.route('/', methods = ['GET'])
 def index():
     
+    member = get_member('alanjknight@hotmail.com')
+    hydrate_member(member)
+ 
     sort_col, last_sort_col, sort_reverse, sort_dir = get_sort_parameters()
     
-    items = get_items()
-    items = sorted(items,key=itemgetter(sort_col), reverse=sort_reverse)
+    if(sort_col=='id'):
+        member.board_list[0].item_list = sorted(member.board_list[0].item_list,key=lambda item: item.id, reverse=sort_reverse)
+    elif(sort_col=='title'):
+        member.board_list[0].item_list = sorted(member.board_list[0].item_list,key=lambda item: item.title, reverse=sort_reverse)
+    elif(sort_col=='status'):
+        member.board_list[0].item_list = sorted(member.board_list[0].item_list,key=lambda item: item.status, reverse=sort_reverse)
+    elif(sort_col=='target_date'):
+        member.board_list[0].item_list = sorted(member.board_list[0].item_list,key=lambda item: item.target_date, reverse=sort_reverse)        
 
-    entered_title = session.get('entered_title')
-    entered_target_date = session.get('entered_target_date')
-    target_date_feedback = session.get('target_date_feedback')
-    title_feedback = session.get('title_feedback')
-    session['entered_title']=""
-    session['entered_target_date'] = ""
-    session['target_date_feedback'] = ""
-    session['title_feedback'] = ""
+    
+#    entered_title = session.get('entered_title')
+#    entered_target_date = session.get('entered_target_date')
+#    target_date_feedback = session.get('target_date_feedback')
+#    title_feedback = session.get('title_feedback')
+#    session['entered_title']=""
+#    session['entered_target_date'] = ""
+#    session['target_date_feedback'] = ""
+#    session['title_feedback'] = ""
 
-
-    return render_template('index.html', items=items, 
+    
+    return render_template('index.html', member=member, 
         sort_col=sort_col,
         last_sort_col=last_sort_col, 
-        sort_dir=sort_dir,
-        entered_title = entered_title,
-        entered_target_date = entered_target_date,
-        target_date_feedback = target_date_feedback,
-        title_feedback = title_feedback)
+        sort_dir=sort_dir)
 
+#       entered_title = entered_title,
+#       entered_target_date = entered_target_date,
+#       target_date_feedback = target_date_feedback,
+#       title_feedback = title_feedback)
+
+"""
 @app.route('/', methods = ['POST'])
 def submit():
     title_feedback = ""
@@ -153,7 +164,7 @@ def update_task(action, id):
     session['sort_dir']=request.args.get('sort_dir')
     session['preserve_sort']=True
     return redirect(url_for('index'))
-    
+"""    
 
 @app.route('/delete/<int:id>')
 def delete_task(id):
@@ -163,6 +174,7 @@ def delete_task(id):
     session['sort_dir']=request.args.get('sort_dir')
     session['preserve_sort']=True
     return redirect(url_for('index'))
+
 
 if __name__ == '__main__':
     app.run(use_debugger=False, use_reloader=False, passthrough_errors=True)

@@ -4,10 +4,15 @@
 {% block content %}
   <div class="jumbotron">
     <h1 class="display-4">To-Do App</h1>
-    <p class="lead">Just another to-do app.</p>
+    <p class="lead">Just another to-do app (with a Trello Backend).</p>
     <hr class="my-4">
   </div>
 
+
+  Trello Member: {{ member.full_name }}
+  <p>Board: {{ member.board_list[0].name}}</p>
+
+  <!--
   <form class="needs-validation" novalidate method="POST" action="/" enctype="multipart/form-data">
     <div class="form-group">
       <label for="title">Title</label>
@@ -34,6 +39,7 @@
       <input type="submit" value="Add Item">
     </div>
   </form>
+-->
 
   <div class="row">
     <div class="col-md-12">
@@ -67,7 +73,7 @@
             {% if sort_col == "target_date" and sort_dir == 'des' %}&#8593;  {% endif %} 
             </a></th>
 
-          <th scope="Col">Action</th>
+<!--          <th scope="Col">Action</th> -->
 
           </tr>
 
@@ -76,13 +82,13 @@
           
         </thead>
         <tbody>
-          {% for item in items %}
+          {% for item in member.board_list[0].item_list %}
             <tr>
               <td>{{ item.id }}</td>
               <td>{{ item.title }}</td>   
               <td>{{ item.status }}</td>
               <td>{{ item.target_date }}</td>
-              <td>
+<!--              <td>
                   {% if item.status=="Not Started" %}
                     <a href = {{ url_for('update_task', action="start_task", id=item.id, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Start Task]</a>
                   {% endif %}
@@ -94,9 +100,11 @@
                   {% endif %}
                   <a href = {{ url_for('delete_task', id=item.id, last_sorted_col=last_sort_col, sort_dir=sort_dir)}}>[Delete Task]</a>
               </td>
+-->              
             </tr>
           {% endfor %}
         </tbody>        
     </div>
   </div>
+
 {% endblock %}
