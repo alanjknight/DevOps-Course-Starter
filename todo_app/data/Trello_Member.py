@@ -15,3 +15,5 @@ class Trello_Member:
         for board in self.board_list:
             s = s + board.to_string() 
         return s 
+
+

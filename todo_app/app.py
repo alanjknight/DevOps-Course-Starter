@@ -3,19 +3,10 @@ from flask import Flask, render_template, redirect, url_for, request, session
 from datetime import datetime
 from operator import itemgetter
 from todo_app.data.Trello_Member import Trello_Member
-from todo_app.data.Trello_Loader import get_member, hydrate_member
+from todo_app.data.Trello_Loader import get_member, hydrate_member, update_task_status
 
 app = Flask(__name__)
 app.config.from_object(Config)
-
-#def update_task_status(task, action):
-#    if action=="start_task":
-#        task["status"]="Started"
-#    if action=="finish_task":
-#        task["status"]="Finished"    
-#    if action=="reset_task":
-#        task["status"]="Not Started"    
-#    save_item(task)
 
 def get_last_sort_col():
     #could not get these lines to return the default of when last_sort_col was None in agrs and session.
@@ -84,7 +75,7 @@ def index():
     
     member = get_member('alanjknight@hotmail.com')
     hydrate_member(member)
- 
+
     sort_col, last_sort_col, sort_reverse, sort_dir = get_sort_parameters()
     
     if(sort_col=='id'):
@@ -155,26 +146,28 @@ def submit():
     add_item(request.form['title'], target_date)
     return redirect(url_for('index'))
 
-@app.route('/update/<string:action>/<int:id>')
-def update_task(action, id):
-    task = get_item(id)
-    update_task_status(task, action)
+"""
+
+@app.route('/update/<string:action>/<string:id_long>')
+def update_task(action, id_long):
+    
+    update_task_status(id_long, action)
+
     session['last_sort_col']=get_last_sort_col()
     session['sort_col']=get_sort_col()
     session['sort_dir']=request.args.get('sort_dir')
     session['preserve_sort']=True
     return redirect(url_for('index'))
-"""    
-
-@app.route('/delete/<int:id>')
-def delete_task(id):
-    delete_item(id)
+    
+@app.route('/delete/<string:id_long>')
+def delete_task(id_long):
+    #delete_item(id_long)
+    print("Delete " + id_long)
     session['last_sort_col']=get_last_sort_col()
     session['sort_col']=get_sort_col()
     session['sort_dir']=request.args.get('sort_dir')
     session['preserve_sort']=True
     return redirect(url_for('index'))
-
 
 if __name__ == '__main__':
     app.run(use_debugger=False, use_reloader=False, passthrough_errors=True)

@@ -12,7 +12,7 @@
   Trello Member: {{ member.full_name }}
   <p>Board: {{ member.board_list[0].name}}</p>
 
-  <!--
+<!--
   <form class="needs-validation" novalidate method="POST" action="/" enctype="multipart/form-data">
     <div class="form-group">
       <label for="title">Title</label>
@@ -72,15 +72,12 @@
             {% if sort_col == "target_date" and sort_dir == 'asc' %} &#8595;  {% endif %}
             {% if sort_col == "target_date" and sort_dir == 'des' %}&#8593;  {% endif %} 
             </a></th>
-
-<!--          <th scope="Col">Action</th> -->
-
+     
+            <th scope="Col">Action</th>
           </tr>
-
-
-          
-          
         </thead>
+
+
         <tbody>
           {% for item in member.board_list[0].item_list %}
             <tr>
@@ -88,23 +85,24 @@
               <td>{{ item.title }}</td>   
               <td>{{ item.status }}</td>
               <td>{{ item.target_date }}</td>
-<!--              <td>
-                  {% if item.status=="Not Started" %}
-                    <a href = {{ url_for('update_task', action="start_task", id=item.id, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Start Task]</a>
+              <td>
+                  {% if item.status=="To Do" %}
+                    <a href = {{ url_for('update_task', action="start_task", id_long=item.id_long, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Start Task]</a>
                   {% endif %}
-                  {% if item.status=="Started" %}
-                    <a href = {{ url_for('update_task', action="finish_task", id=item.id, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Finish Task]</a>
+                  {% if item.status=="Doing" %}
+                    <a href = {{ url_for('update_task', action="finish_task", id_long=item.id_long, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Finish Task]</a>
                   {% endif %}
-                  {% if item.status=="Finished" %}
-                    <a href = {{ url_for('update_task', action="reset_task", id=item.id, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Reset Task]</a>
+                  {% if item.status=="Done" %}
+                    <a href = {{ url_for('update_task', action="reset_task", id_long=item.id_long, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Reset Task]</a>
                   {% endif %}
-                  <a href = {{ url_for('delete_task', id=item.id, last_sorted_col=last_sort_col, sort_dir=sort_dir)}}>[Delete Task]</a>
+                  <a href = {{ url_for('delete_task', id_long=item.id_long, last_sorted_col=last_sort_col, sort_dir=sort_dir)}}>[Delete Task]</a>
               </td>
--->              
+             
             </tr>
           {% endfor %}
-        </tbody>        
+        </tbody>
+
     </div>
   </div>
-
+ 
 {% endblock %}
