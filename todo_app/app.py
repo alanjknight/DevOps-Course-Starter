@@ -3,13 +3,13 @@ from flask import Flask, render_template, redirect, url_for, request, session
 from datetime import datetime
 from operator import itemgetter
 from todo_app.data.Trello_Member import Trello_Member
-from todo_app.data.Trello_Loader import get_member, hydrate_member, update_task_status
+from todo_app.data.Trello_Loader import get_member, hydrate_member, update_task_status, delete_task_from_board, add_task
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
 def get_last_sort_col():
-    #could not get these lines to return the default of when last_sort_col was None in agrs and session.
+    #could not get this line to return the default of when last_sort_col was None in agrs and session.
 #    return request.args.get('last_sort_col', session.get('last_sort_col', 'id'))
     lsc = request.args.get('last_sort_col')
     if not lsc:
@@ -20,7 +20,6 @@ def get_last_sort_col():
     
 def get_sort_col():
     #as in get last sort col, cant get the defaults to work.
-    #print("Sort Col", request.args.get('sort_col', session.get('sort_col', 'id')))
     #return request.args.get('sort_col', session.get('sort_col', 'id'))
     sc = request.args.get('sort_col')
     if not sc:
@@ -31,6 +30,8 @@ def get_sort_col():
 
 
 def get_sort_dir():
+    #as in get last sort col, cant get the defaults to work.
+    #return request.args.get('sort_dir', session.get('sort_dir', 'asc'))
     sd = request.args.get('sort_dir')
     if not sd:
         sd = session.get('sort_dir')
@@ -88,27 +89,26 @@ def index():
         member.board_list[0].item_list = sorted(member.board_list[0].item_list,key=lambda item: item.target_date, reverse=sort_reverse)        
 
     
-#    entered_title = session.get('entered_title')
-#    entered_target_date = session.get('entered_target_date')
-#    target_date_feedback = session.get('target_date_feedback')
-#    title_feedback = session.get('title_feedback')
-#    session['entered_title']=""
-#    session['entered_target_date'] = ""
-#    session['target_date_feedback'] = ""
-#    session['title_feedback'] = ""
+    entered_title = session.get('entered_title')
+    entered_target_date = session.get('entered_target_date')
+    target_date_feedback = session.get('target_date_feedback')
+    title_feedback = session.get('title_feedback')
+    session['entered_title']=""
+    session['entered_target_date'] = ""
+    session['target_date_feedback'] = ""
+    session['title_feedback'] = ""
 
     
     return render_template('index.html', member=member, 
         sort_col=sort_col,
         last_sort_col=last_sort_col, 
-        sort_dir=sort_dir)
+        sort_dir=sort_dir,
+        entered_title = entered_title,
+        entered_target_date = entered_target_date,
+        target_date_feedback = target_date_feedback,
+        title_feedback = title_feedback)
 
-#       entered_title = entered_title,
-#       entered_target_date = entered_target_date,
-#       target_date_feedback = target_date_feedback,
-#       title_feedback = title_feedback)
 
-"""
 @app.route('/', methods = ['POST'])
 def submit():
     title_feedback = ""
@@ -143,16 +143,13 @@ def submit():
         session['title_feedback']=title_feedback
         return redirect(url_for('index'))
 
-    add_item(request.form['title'], target_date)
+    add_task(request.form['title'], target_date)
     return redirect(url_for('index'))
 
-"""
 
 @app.route('/update/<string:action>/<string:id_long>')
 def update_task(action, id_long):
-    
     update_task_status(id_long, action)
-
     session['last_sort_col']=get_last_sort_col()
     session['sort_col']=get_sort_col()
     session['sort_dir']=request.args.get('sort_dir')
@@ -161,8 +158,7 @@ def update_task(action, id_long):
     
 @app.route('/delete/<string:id_long>')
 def delete_task(id_long):
-    #delete_item(id_long)
-    print("Delete " + id_long)
+    delete_task_from_board(id_long)
     session['last_sort_col']=get_last_sort_col()
     session['sort_col']=get_sort_col()
     session['sort_dir']=request.args.get('sort_dir')

@@ -92,10 +92,13 @@ def add_cards_to_list(list):
         c = Trello_Item(card['id'], card['idShort'] , list.name, card['name'], card['due'], card['idBoard'])
         list.add_card(c)
 
-def hydrate_member(member):
+def get_boards_for_member(member):
     for board_id in member.board_id_list:
         add_board_to_member(member,board_id)
-        
+
+
+def hydrate_member(member):
+    get_boards_for_member(member)    
     for board in member.board_list:    
         add_lists_to_board(board)
         add_cards_to_board(board)
@@ -130,7 +133,7 @@ def write_new_task_status(task, list):
         url,
         headers=headers,
         params=query
-)
+    )
 
 
 def update_task_status(id_long, action):
@@ -140,6 +143,45 @@ def update_task_status(id_long, action):
     write_new_task_status(task,new_list)
     
     
+def delete_task_from_board(id_long):
+    url = "https://api.trello.com/1/cards/" + id_long 
+     
+    response = requests.request(
+        "DELETE",
+        url,
+        headers=headers
+    )
+    print(response.text)
+
+
+def add_trello_task(title, target_date, board_id, list_id):
+    url = "https://api.trello.com/1/cards" 
+   
+    query = {
+      'key' :  TRELLO_KEY,
+      'token' : TRELLO_TOKEN,
+      'idList' : list_id
+    } 
+    
+    response = requests.request(
+        "POST",
+        url,
+        headers=headers,
+        params=query
+    )
+    print(response.text)
+
+def add_task(title, target_date):
+    member = get_member('alanjknight@hotmail.com')
+    #assuming one board, and assume all new tickets go on todo list
+    
+    get_boards_for_member(member)
+    board_id = member.board_list[0].id
+    l = get_list_by_list_name(board_id, "To Do")
+    add_trello_task(title, target_date, board_id, l.id)
+
+    
+
 
 #########tests################################
 #member = get_member('alanjknight@hotmail.com')
@@ -153,8 +195,3 @@ def update_task_status(id_long, action):
 #        add_cards_to_list(list)#
 
 #print(member.to_string())
- 
-
-
-
-
