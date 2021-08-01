@@ -2,8 +2,7 @@ from todo_app.flask_config import Config
 from flask import Flask, render_template, redirect, url_for, request, session
 from datetime import datetime
 from operator import itemgetter
-from todo_app.data.Trello_Member import Trello_Member
-from todo_app.data.Trello_Loader import get_member, hydrate_member, update_task_status, delete_task_from_board, add_task
+from todo_app.data.Trello import get_member, hydrate_member, update_task_status, delete_task, add_task
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -158,8 +157,8 @@ def update_task(action, id_long):
     return redirect(url_for('index'))
     
 @app.route('/delete/<string:id_long>')
-def delete_task(id_long):
-    delete_task_from_board(id_long)
+def delete_a_task(id_long):
+    delete_task(id_long)
     session['last_sort_col']=get_last_sort_col()
     session['sort_col']=get_sort_col()
     session['sort_dir']=request.args.get('sort_dir')
