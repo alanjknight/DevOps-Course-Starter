@@ -142,6 +142,7 @@ def update_task_status(id_long, action):
     new_list = get_list_by_list_name(task.board_id, new_list_name)
     write_new_task_status(task,new_list)
     
+
     
 def delete_task_from_board(id_long):
     url = "https://api.trello.com/1/cards/" + id_long 
@@ -149,7 +150,8 @@ def delete_task_from_board(id_long):
     response = requests.request(
         "DELETE",
         url,
-        headers=headers
+        headers=headers,
+        params=query
     )
     print(response.text)
 
@@ -160,7 +162,9 @@ def add_trello_task(title, target_date, board_id, list_id):
     query = {
       'key' :  TRELLO_KEY,
       'token' : TRELLO_TOKEN,
-      'idList' : list_id
+      'idList' : list_id,
+      'name': title,
+      'due': target_date,
     } 
     
     response = requests.request(

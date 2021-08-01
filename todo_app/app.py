@@ -9,8 +9,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 def get_last_sort_col():
-    #could not get this line to return the default of when last_sort_col was None in agrs and session.
-#    return request.args.get('last_sort_col', session.get('last_sort_col', 'id'))
+
     lsc = request.args.get('last_sort_col')
     if not lsc:
         lsc = session.get('last_sort_col')
@@ -19,8 +18,6 @@ def get_last_sort_col():
     return lsc
     
 def get_sort_col():
-    #as in get last sort col, cant get the defaults to work.
-    #return request.args.get('sort_col', session.get('sort_col', 'id'))
     sc = request.args.get('sort_col')
     if not sc:
         sc = session.get('sort_col')
@@ -30,8 +27,6 @@ def get_sort_col():
 
 
 def get_sort_dir():
-    #as in get last sort col, cant get the defaults to work.
-    #return request.args.get('sort_dir', session.get('sort_dir', 'asc'))
     sd = request.args.get('sort_dir')
     if not sd:
         sd = session.get('sort_dir')
@@ -39,7 +34,7 @@ def get_sort_dir():
         sd = 'asc'
     return sd    
 
-def preserve_sort():
+def get_preserve_sort():
     pso = session.get('preserve_sort')
     session['preserve_sort']=None
     return pso==True
@@ -50,13 +45,13 @@ def get_sort_parameters():
         sort_col='id'
         last_sort_col=None
         sort_reverse=False
-        sort_dir='asc'
+        sort_dir='des'
         return sort_col, last_sort_col, sort_reverse, sort_dir    
     else:
         sort_col = get_sort_col()
         last_sort_col = get_last_sort_col()
         sort_dir = get_sort_dir()
-        if(not preserve_sort()):
+        if(not get_preserve_sort()):
             if (sort_col == last_sort_col):
                 if (sort_dir == 'asc'):
                     sort_dir='des'
@@ -78,6 +73,12 @@ def index():
     hydrate_member(member)
 
     sort_col, last_sort_col, sort_reverse, sort_dir = get_sort_parameters()
+
+    session['sort_col']=sort_col
+    session['last_sort_col'] = last_sort_col
+    session['sort_reverse']=sort_reverse
+    session['sort_dir']=sort_dir
+    
     
     if(sort_col=='id'):
         member.board_list[0].item_list = sorted(member.board_list[0].item_list,key=lambda item: item.id, reverse=sort_reverse)
