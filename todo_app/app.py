@@ -73,7 +73,7 @@ def get_sort_parameters():
 @app.route('/', methods = ['GET'])
 def index():
     
-    member = get_member('alanjknight@hotmail.com')
+    member = get_member("alanjknight@hotmail.com")
     hydrate_member(member)
 
     sort_col, last_sort_col, sort_reverse, sort_dir = get_sort_parameters()

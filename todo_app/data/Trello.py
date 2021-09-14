@@ -95,18 +95,3 @@ def add_task(title, target_date):
 
 def delete_task(id_long):
     delete_trello_task(id_long)
-
-
-
-#########tests################################
-#member = get_member('alanjknight@hotmail.com')
-#for board_id in member.board_id_list:
-#    add_board_to_member(member,board_id)
-#    
-#for board in member.board_list:    
-#    add_lists_to_board(board)
-#    add_cards_to_board(board)
-#    for list in board.lists_list:
-#        add_cards_to_list(list)#
-
-#print(member.to_string())

@@ -1,3 +1,7 @@
+from todo_app.data.Trello_Member import Trello_Member
+from todo_app.data.Trello_Item import Trello_Item
+
+
 class ViewModel:
     def __init__(self, member,sort_col,last_sort_col,sort_dir,entered_title,entered_target_date, target_date_feedback,title_feedback):
         self._member = member
@@ -41,4 +45,23 @@ class ViewModel:
     def title_feedback(self):
         return self._title_feedback
 
+    def get_ToDo_items(self):
+        l=[]
+        for item in self._member.board_list[0].item_list:
+            if item.status == "To Do":
+                l.append(item)
+        return l        
 
+    def get_doing_items(self):
+        l=[]
+        for item in self._member.board_list[0].item_list:
+            if item.status == "Doing":
+                l.append(item)
+        return l    
+
+    def get_done_items(self):
+        l=[]
+        for item in self._member.board_list[0].item_list:
+            if item.status == "Done":
+                l.append(item)
+        return l    
