@@ -1,11 +1,16 @@
 from todo_app.flask_config import Config
+from todo_app.ViewModel import ViewModel
+
+
 from flask import Flask, render_template, redirect, url_for, request, session
 from datetime import datetime
 from operator import itemgetter
 from todo_app.data.Trello import get_member, hydrate_member, update_task_status, delete_task, add_task
 
+
 app = Flask(__name__)
 app.config.from_object(Config)
+    
 
 def get_last_sort_col():
 
@@ -98,15 +103,16 @@ def index():
     session['target_date_feedback'] = ""
     session['title_feedback'] = ""
 
-    
-    return render_template('index.html', member=member, 
-        sort_col=sort_col,
-        last_sort_col=last_sort_col, 
-        sort_dir=sort_dir,
-        entered_title = entered_title,
-        entered_target_date = entered_target_date,
-        target_date_feedback = target_date_feedback,
-        title_feedback = title_feedback)
+    view_model = ViewModel(member, 
+        sort_col,
+        last_sort_col, 
+        sort_dir,
+        entered_title,
+        entered_target_date,
+        target_date_feedback,
+        title_feedback)
+
+    return render_template('index.html', view_model=view_model)
 
 
 @app.route('/', methods = ['POST'])
@@ -135,7 +141,7 @@ def submit():
             input_error = True
             target_date_feedback = "This date cannot be converted to a date in the format dd/mm/yy"
 
- 
+
     if input_error:
         session['entered_title'] = request.form['title']
         session['entered_target_date'] = request.form['target_date']
@@ -167,3 +173,6 @@ def delete_a_task(id_long):
 
 if __name__ == '__main__':
     app.run(use_debugger=False, use_reloader=False, passthrough_errors=True)
+
+
+

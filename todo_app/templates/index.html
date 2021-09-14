@@ -9,32 +9,31 @@
   </div>
 
 
-  Trello Member: {{ member.full_name }}
-  <p>Board: {{ member.board_list[0].name}}</p>
+  Trello Member: {{ view_model.member.full_name }}
+  <p>Board: {{ view_model.member.board_list[0].name}}</p>
 
   <form class="needs-validation" novalidate method="POST" action="/" enctype="multipart/form-data">
     <div class="form-group">
       <label for="title">Title</label>
-      <input type="text" class="form-control" id="title", name="title" aria-describedby="title_help" placeholder="Title" value='{{ entered_title }}'>
+      <input type="text" class="form-control" id="title", name="title" aria-describedby="title_help" placeholder="Title" value='{{ view_model.entered_title }}'>
       <div>
-        {% if not title_feedback %}
+        {% if not view_model.title_feedback %}
           <small id="title_help" class="form-text text-muted">Enter Task Description</small>
         {% else %}
-          <small id="title_help" class="errorText">{{ title_feedback }}</small>
+          <small id="title_help" class="errorText">{{ view_model.title_feedback }}</small>
         {% endif %}
       </div>  
 
       <label for="target_date">Target Completion Date</label>
-      <input type="text" class="form-control" id="target_date", name="target_date" aria-describedby="target_date_help" placeholder="dd/mm/yy" value={{ entered_target_date }}>
+      <input type="text" class="form-control" id="target_date", name="target_date" aria-describedby="target_date_help" placeholder="dd/mm/yy" value={{ view_model.entered_target_date }}>
       <div>
-        {% if not target_date_feedback %}
+        {% if not view_model.target_date_feedback %}
           <small id="target_date_help" class="form-text text-muted">Enter Target Completion Date (dd/mm/yy)</small>
         {% else %}
-          <small id="target_date_help" class="errorText">{{ target_date_feedback }}</small>
+          <small id="target_date_help" class="errorText">{{ view_model.target_date_feedback }}</small>
         {% endif %}
       </div>  
-      <input type="hidden" id="last_sort_col" name="last_sort_col" value={{ last_sort_col }} >
-      <input type="hidden" id="sort_reverse" name="sort_reverse" value={{ sort_reverse }} >
+      <input type="hidden" id="last_sort_col" name="last_sort_col" value={{ view_model.last_sort_col }} >
       <input type="submit" value="Add Item">
     </div>
   </form>
@@ -46,30 +45,30 @@
       <table class="table">
         <thead>
           <tr>
-            <input type="hidden" id="sort_col" value={{ sort_col }} >
-            <input type="hidden" id="last_sort_col" value={{ last_sort_col }} >
-            <input type="hidden" id="sort_dir" value={{ sort_dir }} >
+            <input type="hidden" id="sort_col" value={{ view_model.sort_col }} >
+            <input type="hidden" id="last_sort_col" value={{ view_model.last_sort_col }} >
+            <input type="hidden" id="sort_dir" value={{ view_model.sort_dir }} >
             <th scope="Col"><a href = {{ url_for('index', sort_col="id", last_sort_col=last_sort_col, sort_dir=sort_dir) }}>ID 
-              {% if sort_col == "id" and sort_dir == 'asc' %} &#8595;
-              {% elif sort_col == "id" and sort_dir == 'des' %} &#8593;  
+              {% if view_model.sort_col == "id" and view_model.sort_dir == 'asc' %} &#8595;
+              {% elif view_model.sort_col == "id" and view_model.sort_dir == 'des' %} &#8593;  
               {% endif %} 
             </a></th>
             
-            <th scope="Col"><a href = {{ url_for('index', sort_col="title", last_sort_col=last_sort_col, sort_dir=sort_dir) }}>Title
-              {% if sort_col == "title" and sort_dir == 'asc' %} &#8595;  
-              {% elif sort_col == "title" and sort_dir == 'des' %} &#8593;  
+            <th scope="Col"><a href = {{ url_for('index', sort_col="title", last_sort_col=view_model.last_sort_col, sort_dir=view_model.sort_dir) }}>Title
+              {% if view_model.sort_col == "title" and view_model.sort_dir == 'asc' %} &#8595;  
+              {% elif view_model.sort_col == "title" and view_model.sort_dir == 'des' %} &#8593;  
               {% endif %} 
             </a></th>
             
             
-            <th scope="Col"><a href = {{ url_for('index', sort_col="status", last_sort_col=last_sort_col, sort_dir=sort_dir) }}>Status
-            {% if sort_col == "status" and sort_dir == 'asc' %} &#8595;  {% endif %}
-            {% if sort_col == "status" and sort_dir == 'des' %}&#8593;  {% endif %} 
+            <th scope="Col"><a href = {{ url_for('index', sort_col="status", last_sort_col=view_model.last_sort_col, sort_dir=view_model.sort_dir) }}>Status
+            {% if view_model.sort_col == "status" and view_model.sort_dir == 'asc' %} &#8595;  {% endif %}
+            {% if view_model.sort_col == "status" and view_model.sort_dir == 'des' %}&#8593;  {% endif %} 
             </a></th>
 
             <th scope="Col"><a href = {{ url_for('index', sort_col="target_date", last_sort_col=last_sort_col, sort_dir=sort_dir) }}>Target Date
-            {% if sort_col == "target_date" and sort_dir == 'asc' %} &#8595;  {% endif %}
-            {% if sort_col == "target_date" and sort_dir == 'des' %}&#8593;  {% endif %} 
+            {% if view_model.sort_col == "target_date" and view_model.sort_dir == 'asc' %} &#8595;  {% endif %}
+            {% if view_model.sort_col == "target_date" and view_model.sort_dir == 'des' %}&#8593;  {% endif %} 
             </a></th>
      
             <th scope="Col">Action</th>
@@ -78,7 +77,7 @@
 
 
         <tbody>
-          {% for item in member.board_list[0].item_list %}
+          {% for item in view_model.member.board_list[0].item_list %}
             <tr>
               <td>{{ item.id }}</td>
               <td>{{ item.title }}</td>   
