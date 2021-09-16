@@ -4,36 +4,40 @@
 {% block content %}
   <div class="jumbotron">
     <h1 class="display-4">To-Do App</h1>
-    <p class="lead">Just another to-do app.</p>
+    <p class="lead">Just another to-do app (with a Trello Backend).</p>
     <hr class="my-4">
   </div>
+
+
+  Trello Member: {{ view_model.member.full_name }}
+  <p>Board: {{ view_model.member.board_list[0].name}}</p>
 
   <form class="needs-validation" novalidate method="POST" action="/" enctype="multipart/form-data">
     <div class="form-group">
       <label for="title">Title</label>
-      <input type="text" class="form-control" id="title", name="title" aria-describedby="title_help" placeholder="Title" value='{{ entered_title }}'>
+      <input type="text" class="form-control" id="title", name="title" aria-describedby="title_help" placeholder="Title" value='{{ view_model.entered_title }}'>
       <div>
-        {% if not title_feedback %}
+        {% if not view_model.title_feedback %}
           <small id="title_help" class="form-text text-muted">Enter Task Description</small>
         {% else %}
-          <small id="title_help" class="errorText">{{ title_feedback }}</small>
+          <small id="title_help" class="errorText">{{ view_model.title_feedback }}</small>
         {% endif %}
       </div>  
 
       <label for="target_date">Target Completion Date</label>
-      <input type="text" class="form-control" id="target_date", name="target_date" aria-describedby="target_date_help" placeholder="dd/mm/yy" value={{ entered_target_date }}>
+      <input type="text" class="form-control" id="target_date", name="target_date" aria-describedby="target_date_help" placeholder="dd/mm/yy" value={{ view_model.entered_target_date }}>
       <div>
-        {% if not target_date_feedback %}
+        {% if not view_model.target_date_feedback %}
           <small id="target_date_help" class="form-text text-muted">Enter Target Completion Date (dd/mm/yy)</small>
         {% else %}
-          <small id="target_date_help" class="errorText">{{ target_date_feedback }}</small>
+          <small id="target_date_help" class="errorText">{{ view_model.target_date_feedback }}</small>
         {% endif %}
       </div>  
-      <input type="hidden" id="last_sort_col" name="last_sort_col" value={{ last_sort_col }} >
-      <input type="hidden" id="sort_reverse" name="sort_reverse" value={{ sort_reverse }} >
+      <input type="hidden" id="last_sort_col" name="last_sort_col" value={{ view_model.last_sort_col }} >
       <input type="submit" value="Add Item">
     </div>
   </form>
+
 
   <div class="row">
     <div class="col-md-12">
@@ -41,62 +45,62 @@
       <table class="table">
         <thead>
           <tr>
-            <input type="hidden" id="sort_col" value={{ sort_col }} >
-            <input type="hidden" id="last_sort_col" value={{ last_sort_col }} >
-            <input type="hidden" id="sort_dir" value={{ sort_dir }} >
+            <input type="hidden" id="sort_col" value={{ view_model.sort_col }} >
+            <input type="hidden" id="last_sort_col" value={{ view_model.last_sort_col }} >
+            <input type="hidden" id="sort_dir" value={{ view_model.sort_dir }} >
             <th scope="Col"><a href = {{ url_for('index', sort_col="id", last_sort_col=last_sort_col, sort_dir=sort_dir) }}>ID 
-              {% if sort_col == "id" and sort_dir == 'asc' %} &#8595;
-              {% elif sort_col == "id" and sort_dir == 'des' %} &#8593;  
+              {% if view_model.sort_col == "id" and view_model.sort_dir == 'asc' %} &#8595;
+              {% elif view_model.sort_col == "id" and view_model.sort_dir == 'des' %} &#8593;  
               {% endif %} 
             </a></th>
             
-            <th scope="Col"><a href = {{ url_for('index', sort_col="title", last_sort_col=last_sort_col, sort_dir=sort_dir) }}>Title
-              {% if sort_col == "title" and sort_dir == 'asc' %} &#8595;  
-              {% elif sort_col == "title" and sort_dir == 'des' %} &#8593;  
+            <th scope="Col"><a href = {{ url_for('index', sort_col="title", last_sort_col=view_model.last_sort_col, sort_dir=view_model.sort_dir) }}>Title
+              {% if view_model.sort_col == "title" and view_model.sort_dir == 'asc' %} &#8595;  
+              {% elif view_model.sort_col == "title" and view_model.sort_dir == 'des' %} &#8593;  
               {% endif %} 
             </a></th>
             
             
-            <th scope="Col"><a href = {{ url_for('index', sort_col="status", last_sort_col=last_sort_col, sort_dir=sort_dir) }}>Status
-            {% if sort_col == "status" and sort_dir == 'asc' %} &#8595;  {% endif %}
-            {% if sort_col == "status" and sort_dir == 'des' %}&#8593;  {% endif %} 
+            <th scope="Col"><a href = {{ url_for('index', sort_col="status", last_sort_col=view_model.last_sort_col, sort_dir=view_model.sort_dir) }}>Status
+            {% if view_model.sort_col == "status" and view_model.sort_dir == 'asc' %} &#8595;  {% endif %}
+            {% if view_model.sort_col == "status" and view_model.sort_dir == 'des' %}&#8593;  {% endif %} 
             </a></th>
 
             <th scope="Col"><a href = {{ url_for('index', sort_col="target_date", last_sort_col=last_sort_col, sort_dir=sort_dir) }}>Target Date
-            {% if sort_col == "target_date" and sort_dir == 'asc' %} &#8595;  {% endif %}
-            {% if sort_col == "target_date" and sort_dir == 'des' %}&#8593;  {% endif %} 
+            {% if view_model.sort_col == "target_date" and view_model.sort_dir == 'asc' %} &#8595;  {% endif %}
+            {% if view_model.sort_col == "target_date" and view_model.sort_dir == 'des' %}&#8593;  {% endif %} 
             </a></th>
-
-          <th scope="Col">Action</th>
-
+     
+            <th scope="Col">Action</th>
           </tr>
-
-
-          
-          
         </thead>
+
+
         <tbody>
-          {% for item in items %}
+          {% for item in view_model.member.board_list[0].item_list %}
             <tr>
               <td>{{ item.id }}</td>
               <td>{{ item.title }}</td>   
               <td>{{ item.status }}</td>
               <td>{{ item.target_date }}</td>
               <td>
-                  {% if item.status=="Not Started" %}
-                    <a href = {{ url_for('update_task', action="start_task", id=item.id, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Start Task]</a>
+                  {% if item.status=="To Do" %}
+                    <a href = {{ url_for('update_task', action="start_task", id_long=item.id_long, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Start Task]</a>
                   {% endif %}
-                  {% if item.status=="Started" %}
-                    <a href = {{ url_for('update_task', action="finish_task", id=item.id, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Finish Task]</a>
+                  {% if item.status=="Doing" %}
+                    <a href = {{ url_for('update_task', action="finish_task", id_long=item.id_long, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Finish Task]</a>
                   {% endif %}
-                  {% if item.status=="Finished" %}
-                    <a href = {{ url_for('update_task', action="reset_task", id=item.id, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Reset Task]</a>
+                  {% if item.status=="Done" %}
+                    <a href = {{ url_for('update_task', action="reset_task", id_long=item.id_long, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Reset Task]</a>
                   {% endif %}
-                  <a href = {{ url_for('delete_task', id=item.id, last_sorted_col=last_sort_col, sort_dir=sort_dir)}}>[Delete Task]</a>
+                  <a href = {{ url_for('delete_a_task', id_long=item.id_long, last_sorted_col=last_sort_col, sort_dir=sort_dir)}}>[Delete Task]</a>
               </td>
+             
             </tr>
           {% endfor %}
-        </tbody>        
+        </tbody>
+
     </div>
   </div>
+ 
 {% endblock %}

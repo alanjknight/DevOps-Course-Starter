@@ -1,26 +1,19 @@
-from todo_app.data.session_items import add_item, get_items, get_item, save_item, delete_item
+from todo_app.flask_config import Config
+from todo_app.ViewModel import ViewModel
+
+
 from flask import Flask, render_template, redirect, url_for, request, session
 from datetime import datetime
-
 from operator import itemgetter
+from todo_app.data.Trello import get_member, hydrate_member, update_task_status, delete_task, add_task
 
-from todo_app.flask_config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
-
-def update_task_status(task, action):
-    if action=="start_task":
-        task["status"]="Started"
-    if action=="finish_task":
-        task["status"]="Finished"    
-    if action=="reset_task":
-        task["status"]="Not Started"    
-    save_item(task)
+    
 
 def get_last_sort_col():
-    #could not get these lines to return the default of when last_sort_col was None in agrs and session.
-#    return request.args.get('last_sort_col', session.get('last_sort_col', 'id'))
+
     lsc = request.args.get('last_sort_col')
     if not lsc:
         lsc = session.get('last_sort_col')
@@ -29,9 +22,6 @@ def get_last_sort_col():
     return lsc
     
 def get_sort_col():
-    #as in get last sort col, cant get the defaults to work.
-    #print("Sort Col", request.args.get('sort_col', session.get('sort_col', 'id')))
-    #return request.args.get('sort_col', session.get('sort_col', 'id'))
     sc = request.args.get('sort_col')
     if not sc:
         sc = session.get('sort_col')
@@ -48,7 +38,7 @@ def get_sort_dir():
         sd = 'asc'
     return sd    
 
-def preserve_sort():
+def get_preserve_sort():
     pso = session.get('preserve_sort')
     session['preserve_sort']=None
     return pso==True
@@ -59,13 +49,13 @@ def get_sort_parameters():
         sort_col='id'
         last_sort_col=None
         sort_reverse=False
-        sort_dir='asc'
+        sort_dir='des'
         return sort_col, last_sort_col, sort_reverse, sort_dir    
     else:
         sort_col = get_sort_col()
         last_sort_col = get_last_sort_col()
         sort_dir = get_sort_dir()
-        if(not preserve_sort()):
+        if(not get_preserve_sort()):
             if (sort_col == last_sort_col):
                 if (sort_dir == 'asc'):
                     sort_dir='des'
@@ -83,11 +73,27 @@ def get_sort_parameters():
 @app.route('/', methods = ['GET'])
 def index():
     
-    sort_col, last_sort_col, sort_reverse, sort_dir = get_sort_parameters()
-    
-    items = get_items()
-    items = sorted(items,key=itemgetter(sort_col), reverse=sort_reverse)
+    member = get_member("alanjknight@hotmail.com")
+    hydrate_member(member)
 
+    sort_col, last_sort_col, sort_reverse, sort_dir = get_sort_parameters()
+
+    session['sort_col']=sort_col
+    session['last_sort_col'] = last_sort_col
+    session['sort_reverse']=sort_reverse
+    session['sort_dir']=sort_dir
+    
+    
+    if(sort_col=='id'):
+        member.board_list[0].item_list = sorted(member.board_list[0].item_list,key=lambda item: item.id, reverse=sort_reverse)
+    elif(sort_col=='title'):
+        member.board_list[0].item_list = sorted(member.board_list[0].item_list,key=lambda item: item.title, reverse=sort_reverse)
+    elif(sort_col=='status'):
+        member.board_list[0].item_list = sorted(member.board_list[0].item_list,key=lambda item: item.status, reverse=sort_reverse)
+    elif(sort_col=='target_date'):
+        member.board_list[0].item_list = sorted(member.board_list[0].item_list,key=lambda item: item.target_date, reverse=sort_reverse)        
+
+    
     entered_title = session.get('entered_title')
     entered_target_date = session.get('entered_target_date')
     target_date_feedback = session.get('target_date_feedback')
@@ -97,15 +103,17 @@ def index():
     session['target_date_feedback'] = ""
     session['title_feedback'] = ""
 
+    view_model = ViewModel(member, 
+        sort_col,
+        last_sort_col, 
+        sort_dir,
+        entered_title,
+        entered_target_date,
+        target_date_feedback,
+        title_feedback)
 
-    return render_template('index.html', items=items, 
-        sort_col=sort_col,
-        last_sort_col=last_sort_col, 
-        sort_dir=sort_dir,
-        entered_title = entered_title,
-        entered_target_date = entered_target_date,
-        target_date_feedback = target_date_feedback,
-        title_feedback = title_feedback)
+    return render_template('index.html', view_model=view_model)
+
 
 @app.route('/', methods = ['POST'])
 def submit():
@@ -133,7 +141,7 @@ def submit():
             input_error = True
             target_date_feedback = "This date cannot be converted to a date in the format dd/mm/yy"
 
- 
+
     if input_error:
         session['entered_title'] = request.form['title']
         session['entered_target_date'] = request.form['target_date']
@@ -141,23 +149,22 @@ def submit():
         session['title_feedback']=title_feedback
         return redirect(url_for('index'))
 
-    add_item(request.form['title'], target_date)
+    add_task(request.form['title'], target_date)
     return redirect(url_for('index'))
 
-@app.route('/update/<string:action>/<int:id>')
-def update_task(action, id):
-    task = get_item(id)
-    update_task_status(task, action)
+
+@app.route('/update/<string:action>/<string:id_long>')
+def update_task(action, id_long):
+    update_task_status(id_long, action)
     session['last_sort_col']=get_last_sort_col()
     session['sort_col']=get_sort_col()
     session['sort_dir']=request.args.get('sort_dir')
     session['preserve_sort']=True
     return redirect(url_for('index'))
     
-
-@app.route('/delete/<int:id>')
-def delete_task(id):
-    delete_item(id)
+@app.route('/delete/<string:id_long>')
+def delete_a_task(id_long):
+    delete_task(id_long)
     session['last_sort_col']=get_last_sort_col()
     session['sort_col']=get_sort_col()
     session['sort_dir']=request.args.get('sort_dir')
@@ -166,3 +173,6 @@ def delete_task(id):
 
 if __name__ == '__main__':
     app.run(use_debugger=False, use_reloader=False, passthrough_errors=True)
+
+
+
