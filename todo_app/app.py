@@ -91,7 +91,10 @@ def index():
     elif(sort_col=='status'):
         member.board_list[0].item_list = sorted(member.board_list[0].item_list,key=lambda item: item.status, reverse=sort_reverse)
     elif(sort_col=='target_date'):
-        member.board_list[0].item_list = sorted(member.board_list[0].item_list,key=lambda item: item.target_date, reverse=sort_reverse)        
+        member.board_list[0].item_list = sorted(member.board_list[0].item_list,key=lambda item: item.target_date, reverse=sort_reverse)   
+    elif(sort_col=='last_activity_date'):
+        member.board_list[0].item_list = sorted(member.board_list[0].item_list,key=lambda item: item.last_activity_date, reverse=sort_reverse)   
+             
 
     
     entered_title = session.get('entered_title')

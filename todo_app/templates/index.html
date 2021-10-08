@@ -70,6 +70,12 @@
             {% if view_model.sort_col == "target_date" and view_model.sort_dir == 'des' %}&#8593;  {% endif %} 
             </a></th>
      
+            <th scope="Col"><a href = {{ url_for('index', sort_col="last_activity_date", last_sort_col=last_sort_col, sort_dir=sort_dir) }}>Last Activity
+              {% if view_model.sort_col == "last_activity_date" and view_model.sort_dir == 'asc' %} &#8595;  {% endif %}
+              {% if view_model.sort_col == "last_activity_date" and view_model.sort_dir == 'des' %}&#8593;  {% endif %} 
+              </a></th>
+                  
+
             <th scope="Col">Action</th>
           </tr>
         </thead>
@@ -80,6 +86,7 @@
               <td>{{ item.title }}</td>   
               <td>{{ item.status }}</td>
               <td>{{ item.target_date }}</td>
+              <td>{{ item.last_activity_date }}</td>
               <td>
                   {% if item.status=="To Do" %}
                     <a href = {{ url_for('update_task', action="start_task", id_long=item.id_long, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Start Task]</a>
@@ -133,7 +140,12 @@
             {% if view_model.sort_col == "target_date" and view_model.sort_dir == 'asc' %} &#8595;  {% endif %}
             {% if view_model.sort_col == "target_date" and view_model.sort_dir == 'des' %}&#8593;  {% endif %} 
             </a></th>
-     
+  
+            <th scope="Col"><a href = {{ url_for('index', sort_col="last_activity_date", last_sort_col=last_sort_col, sort_dir=sort_dir) }}>Last Activity
+              {% if view_model.sort_col == "last_activity_date" and view_model.sort_dir == 'asc' %} &#8595;  {% endif %}
+              {% if view_model.sort_col == "last_activity_date" and view_model.sort_dir == 'des' %}&#8593;  {% endif %} 
+              </a></th>
+  
             <th scope="Col">Action</th>
           </tr>
         </thead>
@@ -144,6 +156,7 @@
               <td>{{ item.title }}</td>   
               <td>{{ item.status }}</td>
               <td>{{ item.target_date }}</td>
+              <td>{{ item.last_activity_date }}</td>
               <td>
                   {% if item.status=="To Do" %}
                     <a href = {{ url_for('update_task', action="start_task", id_long=item.id_long, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Start Task]</a>
@@ -194,7 +207,12 @@
               {% if view_model.sort_col == "target_date" and view_model.sort_dir == 'asc' %} &#8595;  {% endif %}
               {% if view_model.sort_col == "target_date" and view_model.sort_dir == 'des' %}&#8593;  {% endif %} 
               </a></th>
-       
+  
+              <th scope="Col"><a href = {{ url_for('index', sort_col="last_activity_date", last_sort_col=last_sort_col, sort_dir=sort_dir) }}>Last Activity
+                {% if view_model.sort_col == "last_activity_date" and view_model.sort_dir == 'asc' %} &#8595;  {% endif %}
+                {% if view_model.sort_col == "last_activity_date" and view_model.sort_dir == 'des' %}&#8593;  {% endif %} 
+              </a></th>
+    
               <th scope="Col">Action</th>
             </tr>
           </thead>
@@ -205,6 +223,7 @@
                 <td>{{ item.title }}</td>   
                 <td>{{ item.status }}</td>
                 <td>{{ item.target_date }}</td>
+                <td>{{ item.last_activity_date }}</td>
                 <td>
                     {% if item.status=="To Do" %}
                       <a href = {{ url_for('update_task', action="start_task", id_long=item.id_long, last_sort_col=last_sort_col, sort_dir=sort_dir)}}>[Start Task]</a>
