@@ -28,7 +28,10 @@ def test_index_page(mock_get_requests, client):
     mock_get_requests.side_effect = mock_get_lists
     response = client.get('/')
     assert(response.status=='200 OK')
-#    assert(response.data.find('Joe.Bloggs@xyz.com')>1)
+    #ensure we get HTML
+    assert(response.data.decode().startswith('<!doctype html>'))
+    #ensure the user Joe.Bloggs in mentioned in the page
+    assert(response.data.decode().find('Joe Bloggs') >=0 )
 
 
 def mock_get_lists(method, url, headers, params):
