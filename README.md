@@ -71,4 +71,8 @@ poetry run pytest -k "test_only_d" todo_app\tests\test_items.py
 Open testing view
 Run all or some of the tests using the play or debug icons next to the test or test group.
 
+## vagrant file will allow you to run the app within a vagrant VM.
+ensure you are in the directory which contains the Vagrantfile file.
+vagrant destroy (to destroy any VMs)
+vagrant up --provision
 
