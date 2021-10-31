@@ -25,7 +25,7 @@ def get_card(task_id):
     url = "https://api.trello.com/1/cards/" + task_id
     response = run_get_query (url)
     card = response.json()
-    return Trello_Item(card['id'], card['idShort'] , get_list_for_card(card['id']), card['name'], card['due'], card['idBoard'])
+    return Trello_Item(card['id'], card['idShort'] , get_list_for_card(card['id']), card['name'], card['due'], card['idBoard'], card['dateLastActivity'])
 
 def add_board_to_member(member,board_id):
     response = get_board_details(board_id)
@@ -40,13 +40,13 @@ def add_lists_to_board(board):
 def add_cards_to_board(board):
     response = get_cards_on_board(board.id)
     for card in response.json():
-        c = Trello_Item(card['id'], card['idShort'], get_list_for_card(card['id']), card['name'], card['due'], card['idBoard'])
+        c = Trello_Item(card['id'], card['idShort'], get_list_for_card(card['id']), card['name'], card['due'], card['idBoard'], card['dateLastActivity'])
         board.add_card(c)
     
 def add_cards_to_list(list):
     response = get_cards_on_list(list.id)
     for card in response.json():
-        c = Trello_Item(card['id'], card['idShort'] , list.name, card['name'], card['due'], card['idBoard'])
+        c = Trello_Item(card['id'], card['idShort'] , list.name, card['name'], card['due'], card['idBoard'], card['dateLastActivity'])
         list.add_card(c)
 
 def get_boards_for_member(member):

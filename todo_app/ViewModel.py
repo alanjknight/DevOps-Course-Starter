@@ -45,23 +45,9 @@ class ViewModel:
     def title_feedback(self):
         return self._title_feedback
 
-    def get_ToDo_items(self):
+    def get_items(self, status):
         l=[]
         for item in self._member.board_list[0].item_list:
-            if item.status == "To Do":
+            if item.status == status:
                 l.append(item)
         return l        
-
-    def get_doing_items(self):
-        l=[]
-        for item in self._member.board_list[0].item_list:
-            if item.status == "Doing":
-                l.append(item)
-        return l    
-
-    def get_done_items(self):
-        l=[]
-        for item in self._member.board_list[0].item_list:
-            if item.status == "Done":
-                l.append(item)
-        return l    

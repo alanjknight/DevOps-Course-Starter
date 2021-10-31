@@ -55,3 +55,24 @@ You should see output similar to the following:
  * Debugger PIN: 226-556-590
 ```
 Now visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
+
+
+## TESTING
+## Running all tests from the command line:
+poetry run pytest 
+## Running a single test from the command line:
+poetry run pytest todo_app\tests\test_items.py::test_only_to_do_items 
+
+## Running a set of tests based on a pattern from command line (slightly contrived example runs tests for only done and doing, excludes "to do")
+poetry run pytest -k "test_only_d" todo_app\tests\test_items.py
+
+## Running all tests from VSCode
+<Ctrl><Shift>P -> Python Configure Tests -> Pytest
+Open testing view
+Run all or some of the tests using the play or debug icons next to the test or test group.
+
+## vagrant file will allow you to run the app within a vagrant VM.
+ensure you are in the directory which contains the Vagrantfile file.
+vagrant destroy (to destroy any VMs)
+vagrant up --provision
+

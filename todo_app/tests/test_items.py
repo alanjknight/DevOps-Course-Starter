@@ -10,7 +10,7 @@ def test_only_to_do_items():
     #Act
     hydrate_member(member)
     vm = ViewModel(member,None,None,None,None,None,None,None)
-    items = vm.get_ToDo_items()
+    items = vm.get_items("To Do")
 
     #Assert we only have items in TODO Status
     for item in items:
@@ -23,7 +23,7 @@ def test_only_doing_items():
     #Act
     hydrate_member(member)
     vm = ViewModel(member,None,None,None,None,None,None,None)
-    items = vm.get_doing_items()
+    items = vm.get_items("Doing")
 
     #Assert 
     for item in items:
@@ -37,7 +37,7 @@ def test_only_done_items():
     #Act
     hydrate_member(member)
     vm = ViewModel(member,None,None,None,None,None,None,None)
-    items = vm.get_done_items()
+    items = vm.get_items("Done")
 
     #Assert 
     for item in items:
